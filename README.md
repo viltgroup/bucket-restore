@@ -5,6 +5,8 @@
 
 A program that does point in time restores for buckets in Amazon Web Services (AWS) S3 and Google Cloud Platform (GCP) Storage.
 
+`brestore` restores the state of objects in a bucket to a given point in time. This works by checking the current version (AWS) or generation (GCP) of the objects and comparing it to the version/generation at the point in time given. Then brestore will perform the necessary action on the objects to ensure they are at the desired state. It's highly recommended to use brestore with object versioning activated. brestore will work on buckets without object versioning activated, but with limited functionality.
+
 ## Features
 
 * Rollback objects in a bucket to a previous state.
@@ -12,7 +14,7 @@ A program that does point in time restores for buckets in Amazon Web Services (A
 * Dry runs - preview changes before committing to a rollback
 * Check versions/generations of objects in a bucket
 * Works with multiple objects at the same time for fast restores
-* Doesn't delete object history - it's always possible to undo a rollback
+* Doesn't delete object history - it's always possible to undo a rollback if object versioning is activated
 
 ## Download
 
@@ -22,11 +24,13 @@ A program that does point in time restores for buckets in Amazon Web Services (A
 
 ## Install using Go
 
-If you have Go 1.16+ installed, you can install `brestore` on your machine with `go get`:
+If you have Go 1.16+ installed, you can build `brestore` on your machine:
 
-    go get github.com/viltgroup/bucket-restore/cmd/brestore
+  * Download the contents of this repository into a folder
+  * Change directory to the downloaded folder
+  * `go install ./cmd/brestore`
 
-This will install `brestore` on your machine. The location where Go installs packages depends on how your environment is set up, but this folder is typically in `$HOME/go/bin`.
+    This will install `brestore` on your machine. The location where Go installs packages depends on how your environment is set up, but this folder is typically in `$HOME/go/bin`.
 
 ## Examples
 
@@ -73,7 +77,7 @@ This will install `brestore` on your machine. The location where Go installs pac
 
 * `-p, --aws-profile string` - name of the AWS profile to use to perform requests.
 
-* `-b, --bucket string` - the URI to the bucket to which rollback/listing actions shouldbe applied.
+* `-b, --bucket string` - the URI to the bucket to which rollback/listing actions should be applied.
 * `-k, --gcp-key-file string` - path to a JSON key file of a GCP Service Account
 * `-h, --help` - help for brestore
 * `-t, --time string` - the point in time where to restore to.
@@ -81,7 +85,7 @@ This will install `brestore` on your machine. The location where Go installs pac
 **Rollback flags**
 
 * `-d, --dry-run` - summary of the changes that will be made if the rollback is run.
-* `-e, --dry-run-explain` -        same as '--dry-run' but shows additional information for each object about the current state and the state of the object in the point in time given to the --time flag.
+* `-e, --dry-run-explain` - same as --dry-run but shows additional information for each object about the current state and the state of the object in the point in time given to the --time flag.
 * `-h, --help` - help for rollback
 * `-c, --max-concurrency int` - maximum number of rollback actions that can run concurrently.
 * `-q, --quiet` - show less output.
